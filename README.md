@@ -9,7 +9,7 @@ IFMShare是一个iOS客户端应用内分享的界面、功能一体化解决方
 
 # GIF展示
 
-![动图展示](http://upload-images.jianshu.io/upload_images/953487-cb7e1184c9026866.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![动图展示](http://upload-images.jianshu.io/upload_images/953487-1b3b9c5eb4ea7ec7.gif?imageMogr2/auto-orient/strip)
 
 # 使用
 
