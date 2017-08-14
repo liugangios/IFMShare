@@ -51,7 +51,7 @@ IFMPlatformNameSms;   //短信
 ```
 即可快速初始化一个包括`title、image和action`的分享`cell`。
 
-如果提供的image不符合您的要求，你可以使用以下方法初始化一个`IFMShareItem`。
+如果提供的image不符合您的要求，您可以使用以下方法初始化一个`IFMShareItem`。
 
 ```
 - (instancetype)initWithImage:(UIImage *)image
@@ -97,7 +97,7 @@ typedef void (^__nullable shareHandle)(IFMShareItem *item);
 ```
 - (instancetype)initWithShareItems:(NSArray *)shareItems functionItems:(NSArray *)functionItems itemSize:(CGSize)itemSize;
 ```
-其中`itemSize`是需要传入的`IFMShareItemCell`大小，IFMShareView会根据传入的`itemSize`自动调整自己的大小。如果你想使用默认大小，传入一个预制的宏`IFMShareItemCellSize`，为`CGSizeMake(80, 100)`，`shareItems`是第一行的分享性质的按钮数组，`functionItems`是第二行功能性质的按钮数组，存放的是`IFMShareItem`或者预制的分享平台名称，比如：`IFMPlatformNameSina、IFMPlatformNameEmail`。
+其中`itemSize`是需要传入的`IFMShareItemCell`大小，IFMShareView会根据传入的`itemSize`自动调整自己的大小。如果您想使用默认大小，传入一个预制的宏`IFMShareItemCellSize`，为`CGSizeMake(80, 100)`，`shareItems`是第一行的分享性质的按钮数组，`functionItems`是第二行功能性质的按钮数组，存放的是`IFMShareItem`或者预制的分享平台名称，比如：`IFMPlatformNameSina、IFMPlatformNameEmail`。
 
 如果您要使用的分享界面是一个九宫格类型的，使用以下初始化方法
 
@@ -143,7 +143,7 @@ typedef void (^__nullable shareHandle)(IFMShareItem *item);
 @property (nonatomic) BOOL showsHorizontalScrollIndicator;//是否显示横向滚动条
 @property (nonatomic) BOOL showCancleButton;//是否显示取消按钮
 ```
-你可以试着玩一玩。使用过程中有任何问题，请在issue中提出，或者邮件联系我，或者关注我的新浪微博[@小刘大刚](http://weibo.com/liugangios/home?wvr=5&sudaref=www.baidu.com&retcode=6102)，我会及时修改更新，谢谢您的支持，希望我的代码可以给您灵感，同时也帮助我成长，世界因为开源而美好。
+您可以试着玩一玩。使用过程中有任何问题，请在issue中提出，或者邮件联系我，或者关注我的新浪微博[@小刘大刚](http://weibo.com/liugangios/home?wvr=5&sudaref=www.baidu.com&retcode=6102)，我会及时修改更新，谢谢您的支持，希望我的代码可以给您灵感，同时也帮助我成长，世界因为开源而美好。
 
 # TODO
 * [ ] 支持cocoapods
