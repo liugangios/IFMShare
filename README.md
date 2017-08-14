@@ -3,7 +3,7 @@ IFMShare是一个iOS客户端应用内分享的界面、功能一体化解决方
 
 # Demo展示
 
-![](http://upload-images.jianshu.io/upload_images/953487-f3ff921129424626.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![图片展示](http://upload-images.jianshu.io/upload_images/953487-f3ff921129424626.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ![图片展示](http://upload-images.jianshu.io/upload_images/953487-fba1892bb8d8bdf0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
@@ -144,5 +144,11 @@ typedef void (^__nullable shareHandle)(IFMShareItem *item);
 @property (nonatomic) BOOL showCancleButton;//是否显示取消按钮
 ```
 你可以试着玩一玩。使用过程中有任何问题，请在issue中提出，或者邮件联系我，或者关注我的新浪微博[@小刘大刚](http://weibo.com/liugangios/home?wvr=5&sudaref=www.baidu.com&retcode=6102)，我会及时修改更新，谢谢您的支持，希望我的代码可以给您灵感，同时也帮助我成长，世界因为开源而美好。
+
+# TODO
+* [ ] 支持cocoapods
+* [ ] 加入更多预制平台
+* [ ] 介绍对比4种分享方案
+
 
 
