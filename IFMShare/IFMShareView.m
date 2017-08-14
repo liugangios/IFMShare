@@ -7,38 +7,67 @@
 //
 
 #import "IFMShareView.h"
-#import "IFMShareItemCell.h"
-#define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
-#define SCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
+
 
 @interface IFMShareView()<UICollectionViewDelegate,UICollectionViewDataSource>
+@property (nonatomic, strong) NSArray *shareItems;
+@property (nonatomic, strong) NSArray *functionItems;
+
+@property (nonatomic, strong) UIView *containView;//背景View(包裹各种元素的view)
+@property (nonatomic, strong) UIView *bodyView;//中间View,主要放分享(去除head、foot放分享按钮的view)
+@property (nonatomic, strong) UIView *middleLine;//中间线
+
 @property(nonatomic, weak)UICollectionView *shareCollectionView;
 @property(nonatomic, weak)UICollectionView *functionCollectionView;
+
+@property(nonatomic, assign) BOOL oneLine;
+@property (nonatomic) NSUInteger itemCountEveryRow; //每一行item个数
+@property (nonatomic, weak)UIViewController *presentVC;
+
+@property (nonatomic, strong) NSString *shareText;
+@property (nonatomic, strong) UIImage *shareImage;
+@property (nonatomic, strong) NSURL *shareUrl;
 @end
 
 @implementation IFMShareView
+
+#pragma mark - 初始化方法
+
 - (instancetype)initWithFrame:(CGRect)frame {
     
     frame = [UIScreen mainScreen].bounds;
     self = [super initWithFrame:frame];
     if (self) {
-        // #TODO:换成UIControl
+        _itemSize = CGSizeMake(80, 80);
+        _itemSpace = 0;
+        _itemImageSize = CGSizeMake(60, 60);
+        _itemImageTopSpace = 15;
+        _iconAndTitleSpace = 5;
+        _itemTitleColor = [UIColor blackColor];
+        _itemTitleFont = [UIFont systemFontOfSize:10];
+        _showBorderLine = NO;
+        _showsHorizontalScrollIndicator = NO;
+        _containViewColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.9];
+        _showCancleButton = YES;
+        _middleLineColor = [UIColor colorWithWhite:0.5 alpha:0.3];
+        _middleTopSpace = 0;
+        _middleBottomSpace = 0;
+        _middleLineEdgeSpace = 0;
+        
         UIControl *maskView = [[UIControl alloc] initWithFrame:frame];
         maskView.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.6];
         maskView.tag = 100;
         [maskView addTarget:self action:@selector(maskViewClick:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:maskView];
         
-        
         _containView = [[UIView alloc] init];
-        _containView.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:0.9];
         _containView.userInteractionEnabled = YES;
         [self addSubview:_containView];
         
         _bodyView = [[UIView alloc] init];
         _bodyView.backgroundColor = [UIColor clearColor];
         _bodyView.userInteractionEnabled = YES;
-        [self addSubview:_bodyView];
+        [_containView addSubview:_bodyView];
         
         _cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _cancleButton.frame = CGRectMake(0, 0, frame.size.width, 50);
@@ -48,101 +77,164 @@
         [_cancleButton setBackgroundImage:[self imageWithColor:[UIColor whiteColor] size:CGSizeMake(1.0, 1.0)] forState:UIControlStateNormal];
         [_cancleButton setBackgroundImage:[self imageWithColor:[UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:1.0] size:CGSizeMake(1.0, 1.0)] forState:UIControlStateHighlighted];
         [_cancleButton addTarget:self action:@selector(cancleButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:_cancleButton];
+        [_containView addSubview:_cancleButton];
     }
     return self;
 }
+
+- (instancetype)initWithItems:(NSArray *)items itemSize:(CGSize)itemSize DisplayLine:(BOOL)oneLine{
+    self = [self init];
+    if (self) {
+        self.shareItems = items;
+        self.itemSize = itemSize;
+        self.oneLine = oneLine;
+    }
+    
+    return self;
+}
+
+- (instancetype)initWithShareItems:(NSArray *)shareItems functionItems:(NSArray *)functionItems itemSize:(CGSize)itemSize{
+    self = [self init];
+    if (self) {
+        self.shareItems = shareItems;
+        self.functionItems = functionItems;
+        self.itemSize = itemSize;
+        self.oneLine = YES;
+    }
+    return self;
+}
+- (instancetype)initWithItems:(NSArray *)items countEveryRow:(NSInteger)count{
+    self = [self init];
+    if (self) {
+        self.shareItems = items;
+        self.itemSize = CGSizeMake(SCREEN_WIDTH/count, SCREEN_WIDTH/count);
+        self.oneLine = NO;
+        self.showBorderLine = YES;
+        self.showCancleButton = NO;
+    }
+    return self;
+}
+#pragma mark - 暴露方法
+
+- (void)showFromControlle:(UIViewController *)controller{
+    _presentVC = controller;
+    [self showInView:controller.view];
+    
+}
+
+- (void)dismiss:(BOOL)animated{
+    if (animated) {
+        [self tappedCancel];
+    }else{
+        [self removeFromSuperview];
+    }
+}
+
+- (void)addText:(NSString *)text{
+    _shareText = text;
+}
+- (void)addImage:(UIImage *)image{
+    _shareImage = image;
+}
+- (void)addURL:(NSURL *)url{
+    _shareUrl = url;
+}
+
+#pragma mark - set、get方法
+
 -(void)setHeaderView:(UIView *)headerView {
     [_headerView removeFromSuperview];
     _headerView = headerView;
-    [self addSubview:_headerView];
+    [self.containView addSubview:_headerView];
 }
 
 -(void)setFooterView:(UIView *)footerView {
     [_footerView removeFromSuperview];
     _footerView = footerView;
-    [self addSubview:_footerView];
+    [self.containView addSubview:_footerView];
 }
+
 - (UIView *)middleLine {
     if (!_middleLine) {
         _middleLine = [[UIView alloc] init];
-        _middleLine.backgroundColor = [UIColor colorWithRed:208/255.0 green:208/255.0 blue:208/255.0 alpha:1.0];
+        _middleLine.backgroundColor = _middleLineColor;
         [_bodyView addSubview:_middleLine];
     }
     return _middleLine;
 }
 
+-(void)layoutSubviews {
+    [super layoutSubviews];
+    
+    //计算总高度
+    float height = _bodyViewEdgeInsets.top + _bodyViewEdgeInsets.bottom;
+    
+    if (_cancleButton) {
+        height += _cancleButton.frame.size.height;
+    }
+    if (_headerView) {
+        height += _headerView.frame.size.height;
+    }
+    if (_footerView) {
+        height += _footerView.frame.size.height;
+    }
+    if (_middleLine) {
+        height += _middleLine.frame.size.height;
+    }
+    float bodyHeight = 0;
+    if (_bodyView) {
+        if (_shareCollectionView) {
+            bodyHeight += _shareCollectionView.frame.size.height;
+        }
+        if (_functionCollectionView) {
+            bodyHeight += (_shareCollectionView.frame.size.height + 0.5 + + _middleTopSpace + _middleBottomSpace);
+        }
+        height += bodyHeight;
+    }
+    
+    //动画前置控件位置
+    if (_containView) {
+        _containView.frame = CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, height);
+    }
+    if (_headerView) {
+        _headerView.frame = CGRectMake(0, 0, SCREEN_WIDTH, _headerView.frame.size.height);
+    }
+    if (_bodyView) {
+        float bodyY = _headerView ? CGRectGetMaxY(_headerView.frame) : 0;
+        _bodyView.frame = CGRectMake(_bodyViewEdgeInsets.left,bodyY+_bodyViewEdgeInsets.top,SCREEN_WIDTH-_bodyViewEdgeInsets.left-_bodyViewEdgeInsets.right, bodyHeight);
+        
+        CGRect shareViewSize = _shareCollectionView.frame;
+        shareViewSize.size.width = _bodyView.frame.size.width;
+        _shareCollectionView.frame = shareViewSize;
+        
+        CGRect functionViewSize = _functionCollectionView.frame;
+        functionViewSize.size.width = _bodyView.frame.size.width;
+        _functionCollectionView.frame = functionViewSize;
+    }
+    if (_footerView) {
+        _footerView.frame = CGRectMake(0, CGRectGetMaxY(_bodyView.frame)+_bodyViewEdgeInsets.bottom, SCREEN_WIDTH, _footerView.frame.size.height);
+    }
+    
+    if (_cancleButton) {
+        _cancleButton.frame = CGRectMake(0, height-_cancleButton.frame.size.height, SCREEN_WIDTH,_cancleButton.frame.size.height);
+    }
+    UIView *zhezhaoView = (UIView *)[self viewWithTag:100];
+    zhezhaoView.alpha = 0;
+    //执行动画
+    [UIView animateWithDuration:0.25 animations:^{
+        if (_containView) {
+            _containView.frame = CGRectMake(0, SCREEN_HEIGHT - height, SCREEN_WIDTH, height);
+        }
+        
+        zhezhaoView.alpha = 0.6;
+        
+    } completion:nil];
+    
+}
 
-- (instancetype)initWithItems:(NSArray *)items DisplayLine:(BOOL)inLine{
-    self.shareItems = items;
-    
-     //计算屏幕容纳几个 cell
-    NSInteger count = self.shareItems.count;
-    NSInteger numberOfPerRow = SCREEN_WIDTH / 80.0;
-    NSInteger number = count / numberOfPerRow;
-    NSInteger remainder = count % numberOfPerRow;
-    
-    CGFloat height = number * 80 + (remainder > 0 ? 80 : 0);
-    if (inLine) {//如果在一行内展示
-        height = 80;
-    }
-    
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    flowLayout.itemSize = CGSizeMake(80, 80);
-    flowLayout.minimumLineSpacing = 0;
-    flowLayout.minimumInteritemSpacing = 0;
-    
-    UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, height) collectionViewLayout:flowLayout];
-    self.shareCollectionView = collectionView;
-    collectionView.delegate = self;
-    collectionView.dataSource = self;
-    collectionView.showsVerticalScrollIndicator = NO;
-    collectionView.showsHorizontalScrollIndicator = NO;
-    collectionView.bounces = NO;
-    collectionView.backgroundColor = [UIColor whiteColor];
-    [collectionView registerClass:[IFMShareItemCell class] forCellWithReuseIdentifier:kCellIdentifier_IFMShareItemCell];
-    [self.bodyView addSubview:collectionView];
-    
-    return self;
-}
-- (instancetype)initWithShareItems:(NSArray *)shareItems functionItems:(NSArray *)functionItems{
-    self.shareItems = shareItems;
-    self.functionItems = functionItems;
-    
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    flowLayout.itemSize = CGSizeMake(80, 80);
-    flowLayout.minimumLineSpacing = 0;
-    flowLayout.minimumInteritemSpacing = 0;
-    
-    UICollectionView *shareCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 80) collectionViewLayout:flowLayout];
-    self.shareCollectionView = shareCollectionView;
-    shareCollectionView.delegate = self;
-    shareCollectionView.dataSource = self;
-    shareCollectionView.showsVerticalScrollIndicator = NO;
-    shareCollectionView.showsHorizontalScrollIndicator = NO;
-    shareCollectionView.bounces = NO;
-    shareCollectionView.backgroundColor = [UIColor whiteColor];
-    [shareCollectionView registerClass:[IFMShareItemCell class] forCellWithReuseIdentifier:kCellIdentifier_IFMShareItemCell];
-    [_bodyView addSubview:shareCollectionView];
-    
-    if (!self.functionItems) {
-        //分割线
-        self.middleLine.frame = CGRectMake(0, shareCollectionView.frame.origin.y+shareCollectionView.frame.size.height, self.frame.size.width, 0.5);
-        //shareScrollView2   功能性Item，#TODO:应该换一个名字
-        UICollectionView *functionCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, self.middleLine.frame.origin.y+self.middleLine.frame.size.height, self.frame.size.width, 80) collectionViewLayout:flowLayout];
-        self.functionCollectionView = functionCollectionView;
-        shareCollectionView.delegate = self;
-        shareCollectionView.dataSource = self;
-        shareCollectionView.showsVerticalScrollIndicator = NO;
-        shareCollectionView.showsHorizontalScrollIndicator = NO;
-        shareCollectionView.bounces = NO;
-        shareCollectionView.backgroundColor = [UIColor whiteColor];
-        [shareCollectionView registerClass:[IFMShareItemCell class] forCellWithReuseIdentifier:kCellIdentifier_IFMShareItemCell];
-   
-        [_bodyView addSubview:functionCollectionView];
-    }
-    return self;
-}
+
+#pragma mark - Action
+
 - (void)cancleButtonAction:(UIButton *)sender {
     [self tappedCancel];
 }
@@ -152,29 +244,14 @@
 }
 
 - (void)tappedCancel {
-    [UIView animateWithDuration:0.5 animations:^{
+    [UIView animateWithDuration:0.25 animations:^{
         UIView *zhezhaoView = (UIView *)[self viewWithTag:100];
         zhezhaoView.alpha = 0;
         
         if (_containView) {
-            _containView.frame = CGRectMake(0, self.frame.size.height, _containView.frame.size.width, _containView.frame.size.height);
+            _containView.frame = CGRectMake(0, SCREEN_HEIGHT,SCREEN_WIDTH, _containView.frame.size.height);
         }
         
-        if (_cancleButton) {
-            _cancleButton.frame = CGRectMake(0, _cancleButton.frame.origin.y + _containView.frame.size.height, _cancleButton.frame.size.width, _cancleButton.frame.size.height);
-        }
-        
-        if (_footerView) {
-            _footerView.frame = CGRectMake(0, _footerView.frame.origin.y + _containView.frame.size.height, _footerView.frame.size.width, _footerView.frame.size.height);
-        }
-        
-        if (_bodyView) {
-            _bodyView.frame = CGRectMake(0, _bodyView.frame.origin.y + _containView.frame.size.height, _bodyView.frame.size.width, _bodyView.frame.size.height);
-        }
-        
-        if (_headerView) {
-            _headerView.frame = CGRectMake(0, _headerView.frame.origin.y + _containView.frame.size.height, _headerView.frame.size.width, _headerView.frame.size.height);
-        }
     } completion:^(BOOL finished) {
         if (finished) {
             [self removeFromSuperview];
@@ -182,133 +259,64 @@
     }];
 }
 
--(void)layoutSubviews {
-    [super layoutSubviews];
-    float height = 0;
-    
-    if (_cancleButton) {
-        height += _cancleButton.frame.size.height;
-        _cancleButton.frame = CGRectMake(0, self.frame.size.height-height, _cancleButton.frame.size.width, _cancleButton.frame.size.height);
-        _cancleButton.hidden = YES;
-    }
-    
-    if (_footerView) {
-        height += _footerView.frame.size.height;
-        _footerView.frame = CGRectMake(0, self.frame.size.height-height, _footerView.frame.size.width, _footerView.frame.size.height);
-        _footerView.hidden = YES;
-    }
-    
-    if (_bodyView) {
-        height += _bodyView.frame.size.height;
-        _bodyView.frame = CGRectMake(0, self.frame.size.height-height, _bodyView.frame.size.width, _bodyView.frame.size.height);
-        _bodyView.hidden = YES;
-    }
-    
-    if (_headerView) {
-        height += _headerView.frame.size.height;
-        _headerView.frame = CGRectMake(0, self.frame.size.height-height, _headerView.frame.size.width, _headerView.frame.size.height);
-        _headerView.hidden = YES;
-    }
-    
-    if (_containView) {
-        _containView.frame = CGRectMake(0, self.frame.size.height-height, _containView.frame.size.width, height);
-        _containView.hidden = YES;
-    }
-    
-    if (_cancleButton) {
-        _cancleButton.frame = CGRectMake(0, _cancleButton.frame.origin.y + _containView.frame.size.height, _cancleButton.frame.size.width, _cancleButton.frame.size.height);
-        _cancleButton.hidden = NO;
-    }
-    
-    if (_footerView) {
-        _footerView.frame = CGRectMake(0, _footerView.frame.origin.y + _containView.frame.size.height, _footerView.frame.size.width, _footerView.frame.size.height);
-        _footerView.hidden = NO;
-    }
-    
-    if (_bodyView) {
-        _bodyView.frame = CGRectMake(0, _bodyView.frame.origin.y + _bodyView.frame.size.height, _bodyView.frame.size.width, _bodyView.frame.size.height);
-        _bodyView.hidden = NO;
-    }
-    
-    if (_headerView) {
-        _headerView.frame = CGRectMake(0, _headerView.frame.origin.y + _containView.frame.size.height, _headerView.frame.size.width, _headerView.frame.size.height);
-        _headerView.hidden = NO;
-    }
-    
-    if (_containView) {
-        _containView.frame = CGRectMake(0, self.frame.size.height, _containView.frame.size.width, _containView.frame.size.height);
-        _containView.hidden = NO;
-    }
-    
-    [UIView animateWithDuration:0.5 animations:^{
-        
-        if (_cancleButton) {
-            _cancleButton.frame = CGRectMake(0, _cancleButton.frame.origin.y - _containView.frame.size.height, _cancleButton.frame.size.width, _cancleButton.frame.size.height);
-        }
-        
-        if (_footerView) {
-            _footerView.frame = CGRectMake(0, _footerView.frame.origin.y - _containView.frame.size.height, _footerView.frame.size.width, _footerView.frame.size.height);
-        }
-        
-        if (_bodyView) {
-            _bodyView.frame = CGRectMake(0, _bodyView.frame.origin.y - _bodyView.frame.size.height, _bodyView.frame.size.width, _bodyView.frame.size.height);
-        }
-        
-        if (_headerView) {
-            _headerView.frame = CGRectMake(0, _headerView.frame.origin.y - _containView.frame.size.height, _headerView.frame.size.width, _headerView.frame.size.height);
-        }
-        
-        if (_containView) {
-            _containView.frame = CGRectMake(0, self.frame.size.height - _containView.frame.size.height, _containView.frame.size.width, _containView.frame.size.height);
-        }
-        
-        UIView *zhezhaoView = (UIView *)[self viewWithTag:100];
-        zhezhaoView.alpha = 0.9;
-        
-    } completion:^(BOOL finished) {
-        
-    }];
-}
-
+#pragma mark - 私有方法
 
 - (void)showInView:(UIView *)view{
-    [view addSubview:self];
-}
-
-#pragma mark UICollectionViewDelegate、UICollectionViewDataSource
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (collectionView == self.shareCollectionView) {
-        return self.shareItems.count;
+    _containView.backgroundColor = _containViewColor;
+    if (!_showCancleButton) {
+        [_cancleButton setTitle:@"" forState:UIControlStateNormal];
+        _cancleButton.frame = CGRectZero;
     }
-    return self.functionItems.count;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-
-    IFMShareItemCell *shareItemCell = [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier_IFMShareItemCell forIndexPath:indexPath];
-    if (collectionView == self.shareCollectionView) {
-        shareItemCell.shareItem = self.shareItems[indexPath.row];
-    }else{
-        shareItemCell.shareItem = self.functionItems[indexPath.row];
-    }
-    return shareItemCell;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    IFMShareItem *shareItem;
-    if (collectionView == self.shareCollectionView) {
-        shareItem = self.shareItems[indexPath.row];
-    }else{
-        shareItem = self.functionItems[indexPath.row];
+    //计算屏幕容纳几个 cell
+    NSInteger count = self.shareItems.count;
+    NSInteger numberOfPerRow = SCREEN_WIDTH / _itemSize.width;
+    NSInteger number = count / numberOfPerRow;
+    NSInteger remainder = count % numberOfPerRow;
+    
+    CGFloat height = number * _itemSize.height + (remainder > 0 ? _itemSize.height : 0);
+    if (_oneLine) {//如果在一行内展示
+        height = _itemSize.height;
     }
     
-    if (shareItem.action) {
-        shareItem.action(shareItem);
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    if (_oneLine) {
+        flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     }
-   
+    flowLayout.itemSize = _itemSize;
+    
+    UICollectionView *shareCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, height) collectionViewLayout:flowLayout];
+    self.shareCollectionView = shareCollectionView;
+    shareCollectionView.delegate = self;
+    shareCollectionView.dataSource = self;
+    shareCollectionView.showsVerticalScrollIndicator = NO;
+    shareCollectionView.showsHorizontalScrollIndicator = _showsHorizontalScrollIndicator;
+    shareCollectionView.bounces = _oneLine;
+    shareCollectionView.backgroundColor = [UIColor clearColor];
+    [shareCollectionView registerClass:[IFMShareItemCell class] forCellWithReuseIdentifier:kCellIdentifier_IFMShareItemCell];
+    [self.bodyView addSubview:shareCollectionView];
+    
+    if (self.functionItems) {
+        //分割线
+        self.middleLine.frame = CGRectMake(_middleLineEdgeSpace, shareCollectionView.frame.origin.y+shareCollectionView.frame.size.height + _middleTopSpace, self.frame.size.width - 2*_middleLineEdgeSpace, 0.5);
+        
+        UICollectionViewFlowLayout *functionflowLayout = [[UICollectionViewFlowLayout alloc] init];
+        functionflowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        functionflowLayout.itemSize = _itemSize;
+        
+        UICollectionView *functionCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, self.middleLine.frame.origin.y+self.middleLine.frame.size.height + _middleBottomSpace, self.frame.size.width, _itemSize.height) collectionViewLayout:functionflowLayout];
+        self.functionCollectionView = functionCollectionView;
+        functionCollectionView.delegate = self;
+        functionCollectionView.dataSource = self;
+        functionCollectionView.showsVerticalScrollIndicator = NO;
+        functionCollectionView.showsHorizontalScrollIndicator = _showsHorizontalScrollIndicator;
+        functionCollectionView.bounces = YES;
+        functionCollectionView.backgroundColor = [UIColor clearColor];
+        [functionCollectionView registerClass:[IFMShareItemCell class] forCellWithReuseIdentifier:kCellIdentifier_IFMShareItemCell];
+        [self.bodyView addSubview:functionCollectionView];
+    }
+    
+    [view addSubview:self];
 }
-
 
 //颜色生成图片方法
 - (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size {
@@ -322,5 +330,76 @@
     UIGraphicsEndImageContext();
     
     return img;
+}
+
+#pragma mark - UICollectionViewDelegate、UICollectionViewDataSource
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if (collectionView == self.shareCollectionView) {
+        return self.shareItems.count;
+    }
+    if (collectionView == self.functionCollectionView) {
+        return self.functionItems.count;
+    }
+    return 0;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    IFMShareItemCell *shareItemCell = [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier_IFMShareItemCell forIndexPath:indexPath];
+    
+    shareItemCell.titleLable.textColor = _itemTitleColor;
+    shareItemCell.titleLable.font= _itemTitleFont;
+    shareItemCell.itemImageTopSpace = _itemImageTopSpace;
+    shareItemCell.iconAndTitleSpace = _iconAndTitleSpace;
+    shareItemCell.itemImageSize = _itemImageSize;
+    shareItemCell.showBorderLine = _showBorderLine;
+    
+    if (collectionView == self.shareCollectionView) {
+        if ([self.shareItems[indexPath.row] isKindOfClass:[NSString class]]) {
+           shareItemCell.shareItem = [[IFMShareItem alloc] initWithPlatformName:self.shareItems[indexPath.row]];
+        }else{
+           shareItemCell.shareItem = self.shareItems[indexPath.row];
+        }
+        
+    }else{
+        if ([self.functionItems[indexPath.row] isKindOfClass:[NSString class]]) {
+            shareItemCell.shareItem = [[IFMShareItem alloc] initWithPlatformName:self.functionItems[indexPath.row]];
+        }else{
+            shareItemCell.shareItem = self.functionItems[indexPath.row];
+        }
+    }
+    shareItemCell.shareItem.shareText = _shareText;
+    shareItemCell.shareItem.shareImage = _shareImage;
+    shareItemCell.shareItem.shareUrl = _shareUrl;
+    shareItemCell.shareItem.presentVC = _presentVC;
+    
+    return shareItemCell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    IFMShareItemCell *cell = (IFMShareItemCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    if (cell.shareItem.action) {
+        cell.shareItem.action(cell.shareItem);
+    }
+    [self dismiss:YES];
+}
+- (CGFloat) collectionView:(UICollectionView *)collectionView
+                    layout:(UICollectionViewLayout *)collectionViewLayout
+minimumLineSpacingForSectionAtIndex:(NSInteger)section
+{
+    if (!_oneLine) {
+        _itemSpace = 0.0f;
+    }
+    return _itemSpace;
+}
+- (CGFloat) collectionView:(UICollectionView *)collectionView
+                    layout:(UICollectionViewLayout *)collectionViewLayout
+minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
+    return 0.0f;
+}
+
+- (void)dealloc{
+    NSLog(@"IFMShareView");
 }
 @end

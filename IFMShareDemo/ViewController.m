@@ -7,92 +7,127 @@
 //
 
 #import "ViewController.h"
-#import "HXEasyCustomShareView.h"
+#import "IFMShareView.h"
 
 @interface ViewController ()
-
+@property(nonatomic, strong) NSMutableArray *shareArray;
+@property(nonatomic, strong) NSMutableArray *functionArray;
 @end
 
 @implementation ViewController
 
+- (NSMutableArray *)shareArray{
+    if (!_shareArray) {
+        _shareArray = [NSMutableArray array];
+        
+        [_shareArray addObject:IFMPlatformNameSms];
+        [_shareArray addObject:IFMPlatformNameEmail];
+        [_shareArray addObject:IFMPlatformNameSina];
+        [_shareArray addObject:IFMPlatformNameWechat];
+        [_shareArray addObject:IFMPlatformNameQQ];
+        [_shareArray addObject:IFMPlatformNameAlipay];
+    }
+    return _shareArray;
+}
+
+- (NSMutableArray *)functionArray{
+    if (!_functionArray) {
+        _functionArray = [NSMutableArray array];
+        [_functionArray addObject:[[IFMShareItem alloc] initWithImage:[UIImage imageNamed:@"function_collection"] title:@"收藏" action:^(IFMShareItem *item) {
+            ALERT_MSG(@"提示",@"点击了收藏",self);
+        }]];
+        [_functionArray addObject:[[IFMShareItem alloc] initWithImage:[UIImage imageNamed:@"function_copy"] title:@"复制" action:^(IFMShareItem *item) {
+            ALERT_MSG(@"提示",@"点击了复制",self);
+        }]];
+        [_functionArray addObject:[[IFMShareItem alloc] initWithImage:[UIImage imageNamed:@"function_expose"] title:@"举报" action:^(IFMShareItem *item) {
+            ALERT_MSG(@"提示",@"点击了举报",self);
+        }]];
+        [_functionArray addObject:[[IFMShareItem alloc] initWithImage:[UIImage imageNamed:@"function_font"] title:@"调整字体" action:^(IFMShareItem *item) {
+            ALERT_MSG(@"提示",@"点击了调整字体",self);
+        }]];
+        [_functionArray addObject:[[IFMShareItem alloc] initWithImage:[UIImage imageNamed:@"function_link"] title:@"复制链接" action:^(IFMShareItem *item) {
+            ALERT_MSG(@"提示",@"点击了复制链接",self);
+        }]];
+        [_functionArray addObject:[[IFMShareItem alloc] initWithImage:[UIImage imageNamed:@"function_refresh"] title:@"刷新" action:^(IFMShareItem *item) {
+            ALERT_MSG(@"提示",@"点击了刷新",self);
+        }]];
+    }
+    return _functionArray;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    UIButton *button1 = [UIButton buttonWithType:UIButtonTypeSystem];
-    button1.frame = CGRectMake(100, 100, 150, 50);
-    [button1 setTitle:@"新浪分享" forState:UIControlStateNormal];
-    [button1 addTarget:self action:@selector(addWeiboShareView) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button1];
 }
-/**
- *  仿新浪微博分享界面
- */
-- (void)addWeiboShareView {
-    //分享媒介数据源
-    NSArray *shareAry = @[@{@"image":@"more_chat",
-                            @"highlightedImage":@"more_chat_highlighted",
-                            @"title":@"私信和群"},
-                          @{@"image":@"more_weixin",
-                            @"highlightedImage":@"more_weixin_highlighted",
-                            @"title":@"微信好友"},
-                          @{@"image":@"more_circlefriends",
-                            @"highlightedImage":@"more_circlefriends_highlighted",
-                            @"title":@"朋友圈"},
-                          @{@"image":@"more_icon_zhifubao",
-                            @"highlightedImage":@"more_icon_zhifubao_highlighted",
-                            @"title":@"支付宝好友"},
-                          @{@"image":@"more_icon_zhifubao_friend",
-                            @"highlightedImage":@"more_icon_zhifubao_friend_highlighted",
-                            @"title":@"生活圈"},
-                          @{@"image":@"more_icon_qq",
-                            @"highlightedImage":@"more_icon_qq_highlighted",
-                            @"title":@"QQ"},
-                          @{@"image":@"more_icon_qzone",
-                            @"highlightedImage":@"more_icon_qzone_highlighted",
-                            @"title":@"QQ空间"},
-                          @{@"image":@"more_mms",
-                            @"highlightedImage":@"more_mms_highlighted",
-                            @"title":@"短信"},
-                          @{@"image":@"more_email",
-                            @"highlightedImage":@"more_email_highlighted",
-                            @"title":@"邮件分享"},
-                          @{@"image":@"more_icon_cardbackground",
-                            @"highlightedImage":@"more_icon_cardbackground_highlighted",
-                            @"title":@"设卡片背景"},
-                          @{@"image":@"more_icon_collection",
-                            @"title":@"收藏"},
-                          @{@"image":@"more_icon_topline",
-                            @"title":@"帮上头条"},
-                          @{@"image":@"more_icon_link",
-                            @"title":@"复制链接"},
-                          @{@"image":@"more_icon_report",
-                            @"title":@"举报"},
-                          @{@"image":@"more_icon_back",
-                            @"title":@"返回首页"}];
-    
-    //自定义头部
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, Screen_Width, 36)];
+
+- (IBAction)showOneLineStyle:(UIButton *)sender {
+//    IFMShareView *shareView = [[IFMShareView alloc] initWithItems:self.shareArray itemSize:CGSizeMake(80,100) DisplayLine:YES];
+    IFMShareView *shareView = [[IFMShareView alloc] initWithItems:@[IFMPlatformNameSms,IFMPlatformNameEmail,IFMPlatformNameQQ,IFMPlatformNameWechat] itemSize:IFMShareItemCellSize DisplayLine:YES];
+    shareView = [self addShareContent:shareView];
+    shareView.itemSpace = 10;
+    [shareView showFromControlle:self];
+}
+
+- (IBAction)showDoubleLineStyle:(UIButton *)sender{
+    IFMShareView *shareView = [[IFMShareView alloc] initWithShareItems:self.shareArray functionItems:self.functionArray itemSize:CGSizeMake(80,100)];
+    shareView = [self addShareContent:shareView];
+    shareView.itemSpace = 10;
+    [shareView showFromControlle:self];
+}
+
+- (IBAction)showSquaredStyle:(UIButton *)sender {
+    IFMShareView *shareView = [[IFMShareView alloc] initWithItems:self.shareArray countEveryRow:4];
+    shareView.itemImageSize = CGSizeMake(45, 45);
+    shareView = [self addShareContent:shareView];
+//    shareView.itemSpace = 10;
+    [shareView showFromControlle:self];
+}
+
+- (IBAction)showHeadFootStyle:(UIButton *)sender {
+    IFMShareView *shareView = [[IFMShareView alloc] initWithShareItems:self.shareArray functionItems:self.functionArray itemSize:CGSizeMake(80,100)];
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, Screen_Width, 30)];
     headerView.backgroundColor = [UIColor clearColor];
-    
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(16, 21, headerView.frame.size.width-32, 15)];
-    label.textColor = [UIColor colorWithRed:94/255.0 green:94/255.0 blue:94/255.0 alpha:1.0];;
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, headerView.frame.size.width, 15)];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.textColor = [UIColor colorWithRed:51/255.0 green:68/255.0 blue:79/255.0 alpha:1.0];
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont systemFontOfSize:15];
-    label.text = @"分享到";
+    label.text = @"我是头部可以自定义的View";
     [headerView addSubview:label];
     
-    //实例化
-    HXEasyCustomShareView *shareView = [[HXEasyCustomShareView alloc] initWithFrame:CGRectMake(0, 0, Screen_Width, Screen_Height)];
-    //设置头部View 如果不设置则不显示头部
+    
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, Screen_Width, 50)];
+    footerView.backgroundColor = [UIColor clearColor];
+    label = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, headerView.frame.size.width, 15)];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.textColor = [UIColor colorWithRed:5/255.0 green:27/255.0 blue:40/255.0 alpha:1.0];
+    label.backgroundColor = [UIColor clearColor];
+    label.font = [UIFont systemFontOfSize:18];
+    label.text = @"我是底部可以自定义的View";
+    [footerView addSubview:label];
+    
     shareView.headerView = headerView;
-    //计算高度 根据第一行显示的数量和总数,可以确定显示一行还是两行,最多显示2行
-    float height = [shareView getBoderViewHeight:shareAry firstCount:9];
-    shareView.boderView.frame = CGRectMake(0, 0, shareView.frame.size.width, height);
-    shareView.firstCount = 9;
-    [shareView setShareAry:shareAry delegate:self];
-    [self.view addSubview:shareView];
+    shareView.footerView = footerView;
+    shareView = [self addShareContent:shareView];
+    [shareView showFromControlle:self];
 }
 
+- (IBAction)showUserDefineStyle:(UIButton *)sender{
+    IFMShareView *shareView = [[IFMShareView alloc] initWithShareItems:self.shareArray functionItems:self.functionArray itemSize:CGSizeMake(80,100)];
+    [shareView.cancleButton setTitle:@"我是可以自定义的按钮" forState:UIControlStateNormal];
+    shareView.middleLineColor = [UIColor redColor];
+    shareView.middleLineEdgeSpace = 20;
+    shareView.middleTopSpace = 10;
+    shareView.middleBottomSpace = 30;
+    shareView = [self addShareContent:shareView];
+    [shareView showFromControlle:self];
+}
 
+//添加分享的内容
+- (IFMShareView *)addShareContent:(IFMShareView *)shareView{
+    [shareView addText:@"分享测试"];
+    [shareView addURL:[NSURL URLWithString:@"http://www.baidu.com"]];
+    [shareView addImage:[UIImage imageNamed:@"share_alipay"]];
+    
+    return shareView;
+}
 
 @end
