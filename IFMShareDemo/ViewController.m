@@ -59,8 +59,7 @@
 }
 
 - (IBAction)showOneLineStyle:(UIButton *)sender {
-//    IFMShareView *shareView = [[IFMShareView alloc] initWithItems:self.shareArray itemSize:CGSizeMake(80,100) DisplayLine:YES];
-    IFMShareView *shareView = [[IFMShareView alloc] initWithItems:@[IFMPlatformNameSms,IFMPlatformNameEmail,IFMPlatformNameQQ,IFMPlatformNameWechat] itemSize:IFMShareItemCellSize DisplayLine:YES];
+    IFMShareView *shareView = [[IFMShareView alloc] initWithItems:self.shareArray itemSize:CGSizeMake(80,100) DisplayLine:YES];
     shareView = [self addShareContent:shareView];
     shareView.itemSpace = 10;
     [shareView showFromControlle:self];
@@ -70,6 +69,16 @@
     IFMShareView *shareView = [[IFMShareView alloc] initWithShareItems:self.shareArray functionItems:self.functionArray itemSize:CGSizeMake(80,100)];
     shareView = [self addShareContent:shareView];
     shareView.itemSpace = 10;
+    [shareView showFromControlle:self];
+}
+
+- (IBAction)showMultiLineStyle:(UIButton *)sender {
+    NSMutableArray *totalArry = [NSMutableArray array];
+    [totalArry addObjectsFromArray:self.shareArray];
+    [totalArry addObjectsFromArray:self.functionArray];
+    IFMShareView *shareView = [[IFMShareView alloc] initWithItems:totalArry itemSize:CGSizeMake(80,100) DisplayLine:NO];
+    shareView = [self addShareContent:shareView];
+    shareView.itemSpace = 100;
     [shareView showFromControlle:self];
 }
 

@@ -16,6 +16,7 @@
 		C29BB7361F3C9F7500911BEC /* IFMShareItem.m in Sources */ = {isa = PBXBuildFile; fileRef = C29BB7351F3C9F7500911BEC /* IFMShareItem.m */; };
 		C29BB7391F3CA20700911BEC /* IFMShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = C29BB7381F3CA20700911BEC /* IFMShareView.m */; };
 		C29BB73F1F3D44E800911BEC /* IFMShareItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C29BB73E1F3D44E800911BEC /* IFMShareItemCell.m */; };
+		C29CA0DD1F41746F00798EE8 /* IFMShareImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C29CA0DC1F41746F00798EE8 /* IFMShareImage.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		C29BB7381F3CA20700911BEC /* IFMShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IFMShareView.m; sourceTree = "<group>"; };
 		C29BB73D1F3D44E800911BEC /* IFMShareItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFMShareItemCell.h; sourceTree = "<group>"; };
 		C29BB73E1F3D44E800911BEC /* IFMShareItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IFMShareItemCell.m; sourceTree = "<group>"; };
+		C29CA0DC1F41746F00798EE8 /* IFMShareImage.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = IFMShareImage.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 		C2285B0E1F3B404500ED2696 /* IFMShare */ = {
 			isa = PBXGroup;
 			children = (
+				C29CA0DC1F41746F00798EE8 /* IFMShareImage.bundle */,
 				C29BB7341F3C9F7500911BEC /* IFMShareItem.h */,
 				C29BB7351F3C9F7500911BEC /* IFMShareItem.m */,
 				C29BB73D1F3D44E800911BEC /* IFMShareItemCell.h */,
@@ -163,6 +166,7 @@
 			files = (
 				C2285B071F3B402F00ED2696 /* LaunchScreen.storyboard in Resources */,
 				C2285B041F3B402F00ED2696 /* Assets.xcassets in Resources */,
+				C29CA0DD1F41746F00798EE8 /* IFMShareImage.bundle in Resources */,
 				C2285B021F3B402F00ED2696 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wzm-ez-8nM">
-                                <rect key="frame" x="149" y="132" width="77" height="30"/>
+                                <rect key="frame" x="149" y="164" width="77" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="九宫格样式"/>
                                 <connections>
@@ -38,7 +38,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h3k-VP-4dg">
-                                <rect key="frame" x="134" y="170" width="108" height="30"/>
+                                <rect key="frame" x="134" y="202" width="108" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="自定义头尾视图"/>
                                 <connections>
@@ -54,11 +54,19 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WXC-Ev-3lA">
-                                <rect key="frame" x="103" y="208" width="169" height="30"/>
+                                <rect key="frame" x="103" y="240" width="169" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="自定义取消按钮、分割线"/>
                                 <connections>
                                     <action selector="showUserDefineStyle:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ohr-rJ-BvI"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dSp-Zy-n7b">
+                                <rect key="frame" x="157" y="129" width="62" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="多行展示"/>
+                                <connections>
+                                    <action selector="showMultiLineStyle:" destination="BYZ-38-t0r" eventType="touchUpInside" id="AmI-cF-woJ"/>
                                 </connections>
                             </button>
                         </subviews>

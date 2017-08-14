@@ -102,7 +102,10 @@ NSString *const  IFMPlatformHandleiCloud = @"IFMPlatformHandleiCloud";
     self = [super init];
     if (self) {
         _title = (messageDict[@"title"] ? messageDict[@"title"] : @"");
-        _image = [UIImage imageNamed:messageDict[@"image"]];
+//        NSString *strResourcesBundle = [[NSBundle mainBundle] pathForResource:@"IFMShareImage"ofType:@"bundle"];
+//        NSString *imageStr = [[NSBundle bundleWithPath:strResourcesBundle] pathForResource:messageDict[@"image"] ofType:@"png"];
+//        _image = [[UIImage alloc] initWithContentsOfFile:imageStr];
+        _image = [UIImage imageNamed:[@"IFMShareImage.bundle" stringByAppendingPathComponent:messageDict[@"image"]]];
         _action = [self actionFromString:messageDict[@"action"]];
     }
     return self;
