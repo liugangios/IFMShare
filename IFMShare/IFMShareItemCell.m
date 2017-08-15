@@ -14,6 +14,7 @@ NSString *const  kCellIdentifier_IFMShareItemCell = @"IFMShareItemCell";
 @property (nonatomic, strong) UIView *bottomLine;
 @property (nonatomic, strong) UIView *rightLine;
 @end
+
 @implementation IFMShareItemCell
 - (UIView *)bottomLine{
     if (!_bottomLine) {
@@ -69,7 +70,5 @@ NSString *const  kCellIdentifier_IFMShareItemCell = @"IFMShareItemCell";
     titleCenter.y = imageCenter.y + _imageView.frame.size.height/2 + _iconAndTitleSpace + _titleLable.frame.size.height/2;
     _titleLable.center = titleCenter;
 }
-- (void)dealloc{
-    NSLog(@"IFMShareItemCell");
-}
+
 @end

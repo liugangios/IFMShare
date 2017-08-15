@@ -76,7 +76,7 @@ NSString *const  IFMPlatformHandleiCloud = @"IFMPlatformHandleiCloud";
 
 - (instancetype)initWithPlatformName:(NSString *)platformName{
     
-    /******************************各种平台***********************************************/
+/******************************各种平台***********************************************/
     NSDictionary *messageDict;
     if ([platformName isEqualToString:IFMPlatformNameSina]) {
         messageDict = @{@"image":@"share_sina",@"title":@"新浪微博",@"action":IFMPlatformHandleSina};
@@ -97,14 +97,11 @@ NSString *const  IFMPlatformHandleiCloud = @"IFMPlatformHandleiCloud";
         messageDict = @{@"image":@"share_alipay",@"title":@"支付宝",@"action":IFMPlatformHandleAlipay};
     }
     
-    /*********************************end************************************************/
+/*********************************end************************************************/
     
     self = [super init];
     if (self) {
         _title = (messageDict[@"title"] ? messageDict[@"title"] : @"");
-//        NSString *strResourcesBundle = [[NSBundle mainBundle] pathForResource:@"IFMShareImage"ofType:@"bundle"];
-//        NSString *imageStr = [[NSBundle bundleWithPath:strResourcesBundle] pathForResource:messageDict[@"image"] ofType:@"png"];
-//        _image = [[UIImage alloc] initWithContentsOfFile:imageStr];
         _image = [UIImage imageNamed:[@"IFMShareImage.bundle" stringByAppendingPathComponent:messageDict[@"image"]]];
         _action = [self actionFromString:messageDict[@"action"]];
     }
@@ -254,7 +251,4 @@ NSString *const  IFMPlatformHandleiCloud = @"IFMPlatformHandleiCloud";
     [_presentVC dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)dealloc{
-    NSLog(@"IFMShareItem");
-}
 @end

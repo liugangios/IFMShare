@@ -399,7 +399,4 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
     return 0.0f;
 }
 
-- (void)dealloc{
-    NSLog(@"IFMShareView");
-}
 @end

@@ -7,10 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#define Screen_Width            ([[UIScreen mainScreen] bounds].size.width)
-#define Screen_Height           ([[UIScreen mainScreen] bounds].size.height)
-@interface ViewController : UIViewController
 
+@interface ViewController : UIViewController
 
 @end
 

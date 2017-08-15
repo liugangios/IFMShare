@@ -19,7 +19,6 @@ extern NSString *const  kCellIdentifier_IFMShareItemCell;// 循环利用的id
 
 @property (nonatomic, strong) IFMShareItem *shareItem;
 
-
 @property (nonatomic) CGSize itemImageSize; //item中image大小
 @property (nonatomic) CGFloat itemImageTopSpace; //item图片距离顶部大小
 @property (nonatomic) CGFloat iconAndTitleSpace; //item图片和文字距离
