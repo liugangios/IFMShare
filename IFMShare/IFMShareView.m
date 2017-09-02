@@ -118,7 +118,8 @@
 
 - (void)showFromControlle:(UIViewController *)controller{
     _presentVC = controller;
-    [self showInView:controller.view];
+    //fix: 自定义导航栏,遮罩不能完全遮住屏幕
+    [self showInView:controller.view.window];
     
 }
 
