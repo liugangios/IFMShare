@@ -113,14 +113,15 @@ NSString *const  IFMPlatformHandleiCloud = @"IFMPlatformHandleiCloud";
 //字符串转 Block
 - (shareHandle)actionFromString:(NSString *)handleName{
     
+    __weak typeof(self) weakSelf = self;
     shareHandle handle = ^(IFMShareItem *item){
         NSString *tipPlatform;
         if ([handleName isEqualToString:IFMPlatformHandleEmail]) {
-            [self sendmailTO:@""];
+            [weakSelf sendmailTO:@""];
             return ;
         }
         if ([handleName isEqualToString:IFMPlatformHandleSms]) {
-            [self sendMessageTO:@""];
+            [weakSelf sendMessageTO:@""];
             return ;
         }
 /******************************各种平台***********************************************/
@@ -173,18 +174,18 @@ NSString *const  IFMPlatformHandleiCloud = @"IFMPlatformHandleiCloud";
        
         SLComposeViewController *composeVc = [SLComposeViewController composeViewControllerForServiceType:platformID];
         if (composeVc == nil){
-            ALERT_MSG(@"提示",UNInstallTip,_presentVC);
+            ALERT_MSG(@"提示",UNInstallTip,weakSelf.presentVC);
             return;
         }
         if (![SLComposeViewController isAvailableForServiceType:platformID]) {
-            ALERT_MSG(@"提示",UNLoginTip,_presentVC);
+            ALERT_MSG(@"提示",UNLoginTip,weakSelf.presentVC);
             return;
         }
-        if (_shareText) [composeVc setInitialText:_shareText];
-        if (_shareImage) [composeVc addImage:_shareImage];
-        if (_shareUrl) [composeVc addURL:_shareUrl];
+        if (weakSelf.shareText) [composeVc setInitialText:weakSelf.shareText];
+        if (weakSelf.shareImage) [composeVc addImage:weakSelf.shareImage];
+        if (weakSelf.shareUrl) [composeVc addURL:weakSelf.shareUrl];
         
-        [_presentVC presentViewController:composeVc animated:YES completion:nil];
+        [weakSelf.presentVC presentViewController:composeVc animated:YES completion:nil];
         composeVc.completionHandler = ^(SLComposeViewControllerResult result){
             if (result == SLComposeViewControllerResultCancelled) {
                 NSLog(@"点击了取消");
